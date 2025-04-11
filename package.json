@@ -63,10 +63,12 @@
   },
   "lint-staged": {
     "*.{js,json}": [
-      "prettier --write"
+      "prettier --write",
+      "git add -f"
     ],
     "*.ts?(x)": [
-      "eslint --fix"
+      "eslint --fix",
+      "git add -f"
     ]
   },
   "devDependencies": {
@@ -92,5 +94,8 @@
     "node": "20.14.0",
     "yarn": "1.22.19"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@tiptap/react": "^2.11.7",
+    "@tiptap/starter-kit": "^2.11.7"
+  }
 }

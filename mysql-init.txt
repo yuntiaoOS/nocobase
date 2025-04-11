@@ -1,0 +1,5 @@
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'admin123456';
+CREATE DATABASE IF NOT EXISTS nocobase;
+CREATE USER IF NOT EXISTS 'nocobase'@'localhost' IDENTIFIED BY 'nocobase';
+GRANT ALL PRIVILEGES ON nocobase.* TO 'nocobase'@'localhost';
+FLUSH PRIVILEGES; 

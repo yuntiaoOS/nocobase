@@ -179,7 +179,7 @@ function getCSBData(opts: IPreviewerProps, ext: string) {
 
 
 export function openCodeSandbox(opts: IPreviewerProps) {
-  const isTSX = Boolean(opts.asset.dependencies?.['index.tsx']);
+  const isTSX = Boolean(opts.asset.dependencies?.['indexC.tsx']);
   const ext = isTSX ? '.tsx' : '.jsx';
   return fetch("https://codesandbox.io/api/v1/sandboxes/define?json=1", {
     method: "POST",
