@@ -31,9 +31,6 @@ export const DocJsonEditor = connect(
   (props) => {
     const field = useField();
     const { editor } = useStyles();
-    const modules = {
-      toolbar: [['bold', 'italic', 'underline', 'link'], [{ list: 'ordered' }, { list: 'bullet' }], ['clean']],
-    };
     const editorInstance = useEditor({
       extensions: [StarterKit],
       content: field.value || '',
@@ -98,6 +95,17 @@ export const DocJsonEditor = connect(
     initialValue: 'defaultValue',
   }),
   mapReadPretty((props) => {
-    return <InputReadPretty.Html {...props} />;
+    const field = useField();
+    const { editor } = useStyles();
+    const editorInstance = useEditor({
+      extensions: [StarterKit],
+      content: field.value || '',
+      editable: false,
+    });
+
+    if (!editorInstance) {
+      return null;
+    }
+    return (<div className={editor}> <EditorContent editor={editorInstance} /> </div>);
   }),
-);
+)
