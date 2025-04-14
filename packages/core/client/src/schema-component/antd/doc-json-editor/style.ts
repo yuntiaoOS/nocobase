@@ -7,38 +7,218 @@
  * For more information, please refer to: https://www.nocobase.com/agreement.
  */
 
-import { genStyleHook } from '../__builtins__';
-import { css } from '@emotion/css';
-/*!
- * Quill Editor v1.3.7
- * https://quilljs.com/
- * Copyright (c) 2014, Jason Chen
- * Copyright (c) 2013, salesforce.com
+/**
+ * This file is part of the NocoBase (R) project.
+ * Copyright (c) 2020-2024 NocoBase Co., Ltd.
+ * Authors: NocoBase Team.
+ *
+ * This project is dual-licensed under AGPL-3.0 and NocoBase Commercial License.
+ * For more information, please refer to: https://www.nocobase.com/agreement.
  */
-export const useStyles = genStyleHook('nb-doc-json-editor', (token) => {
-  const { componentCls } = token;
+import { css } from '@emotion/css';
 
+export const useStyles = () => {
   return {
-    [componentCls]: {
-      editor: css`
-        .ProseMirror {
-          min-height: 200px;
-          border: 1px solid #d9d9d9;
-          border-radius: 2px;
-          padding: 4px 11px;
-          &:hover {
-            border-color: #40a9ff;
-          }
-          &:focus {
-            border-color: #40a9ff;
-            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
-            outline: none;
+    editor: css`
+      /* Basic editor styles */
+      .tiptap {
+        > * + * {
+          margin-top: 0.75em;
+        }
+
+        ul,
+        ol {
+          padding: 0 1rem;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+          line-height: 1.1;
+        }
+
+        code {
+          background-color: rgba(#616161, 0.1);
+          color: #616161;
+        }
+
+        pre {
+          background: #0d0d0d;
+          border-radius: 0.5rem;
+          color: #fff;
+          font-family: 'JetBrainsMono', monospace;
+          padding: 0.75rem 1rem;
+
+          code {
+            background: none;
+            color: inherit;
+            font-size: 0.8rem;
+            padding: 0;
           }
         }
-        .toolbar {
-          margin-bottom: 8px;
+
+        mark {
+          background-color: #faf594;
         }
-      `,
-    },
+
+        img {
+          height: auto;
+          max-width: 100%;
+        }
+
+        hr {
+          margin: 1rem 0;
+        }
+
+        blockquote {
+          border-left: 2px solid rgba(#0d0d0d, 0.1);
+          padding-left: 1rem;
+        }
+
+        hr {
+          border: none;
+          border-top: 2px solid rgba(#0d0d0d, 0.1);
+          margin: 2rem 0;
+        }
+
+        ul[data-type='taskList'] {
+          list-style: none;
+          padding: 0;
+
+          li {
+            align-items: center;
+            display: flex;
+
+            > label {
+              flex: 0 0 auto;
+              margin-right: 0.5rem;
+              user-select: none;
+            }
+
+            > div {
+              flex: 1 1 auto;
+            }
+          }
+        }
+      }
+
+      .editor {
+        background-color: #fff;
+        border: 3px solid #0d0d0d;
+        border-radius: 0.75rem;
+        color: #0d0d0d;
+        display: flex;
+        flex-direction: column;
+        max-height: 26rem;
+
+        &__header {
+          align-items: center;
+          background: #0d0d0d;
+          border-bottom: 3px solid #0d0d0d;
+          border-top-left-radius: 0.25rem;
+          border-top-right-radius: 0.25rem;
+          display: flex;
+          flex: 0 0 auto;
+          flex-wrap: wrap;
+          padding: 0.25rem;
+        }
+
+        &__content {
+          flex: 1 1 auto;
+          overflow-x: hidden;
+          overflow-y: auto;
+          padding: 1.25rem 1rem;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        &__footer {
+          align-items: center;
+          border-top: 3px solid #0d0d0d;
+          color: #0d0d0d;
+          display: flex;
+          flex: 0 0 auto;
+          font-size: 12px;
+          flex-wrap: wrap;
+          font-weight: 600;
+          justify-content: space-between;
+          padding: 0.25rem 0.75rem;
+          white-space: nowrap;
+        }
+
+        /* Some information about the status */
+        &__status {
+          align-items: center;
+          border-radius: 5px;
+          display: flex;
+
+          &::before {
+            background: rgba(#0d0d0d, 0.5);
+            border-radius: 50%;
+            content: ' ';
+            display: inline-block;
+            flex: 0 0 auto;
+            height: 0.5rem;
+            margin-right: 0.5rem;
+            width: 0.5rem;
+          }
+
+          &--connecting::before {
+            background: #616161;
+          }
+
+          &--connected::before {
+            background: #b9f18d;
+          }
+        }
+
+        &__name {
+          button {
+            background: none;
+            border: none;
+            border-radius: 0.4rem;
+            color: #0d0d0d;
+            font: inherit;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+
+            &:hover {
+              background-color: #0d0d0d;
+              color: #fff;
+            }
+          }
+        }
+      }
+
+      /* Give a remote user a caret */
+      .collaboration-cursor__caret {
+        border-left: 1px solid #0d0d0d;
+        border-right: 1px solid #0d0d0d;
+        margin-left: -1px;
+        margin-right: -1px;
+        pointer-events: none;
+        position: relative;
+        word-break: normal;
+      }
+
+      /* Render the username above the caret */
+      .collaboration-cursor__label {
+        border-radius: 3px 3px 3px 0;
+        color: #0d0d0d;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 600;
+        left: -1px;
+        line-height: normal;
+        padding: 0.1rem 0.3rem;
+        position: absolute;
+        top: -1.4em;
+        user-select: none;
+        white-space: nowrap;
+      }
+    `,
   };
-});
+};
