@@ -394,6 +394,34 @@ export const tableColumnSettings = new SchemaSettings({
           },
         },
         {
+          name: 'merge',
+          type: 'switch',
+          useComponentProps() {
+            const { t } = useTranslation();
+            const field = useField();
+            const columnSchema = useFieldSchema();
+            const { dn } = useDesignable();
+            return {
+              title: t('合并列'),
+              checked: field.componentProps.merge || false,
+              onChange: (v) => {
+                // 确保 x-component-props 存在，并保存合并列状态
+                columnSchema['x-component-props'] = columnSchema['x-component-props'] || {};
+                columnSchema['x-component-props']['merge'] = v;
+                field.componentProps.merge = v;
+                // 通知设计器更新 schema 信息
+                dn.emit('patch', {
+                  schema: {
+                    'x-uid': columnSchema['x-uid'],
+                    'x-component-props': columnSchema['x-component-props'],
+                  },
+                });
+                dn.refresh();
+              },
+            };
+          },
+        },
+        {
           name: 'fixed',
           type: 'select',
           useComponentProps() {

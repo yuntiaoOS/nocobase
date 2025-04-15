@@ -88,6 +88,11 @@ interface BodyCellComponentProps {
   isSubTable?: boolean;
 }
 
+// 首先在文件顶部添加一个新的样式常量
+const hiddenCellStyle = {
+  display: 'none',
+};
+
 const useArrayField = (props) => {
   const field = useField<ArrayField>();
   return (props.field || field) as ArrayField;
@@ -160,6 +165,46 @@ const useRefreshTableColumns = () => {
   return { refresh };
 };
 
+const useMergeRowsSchemas = (columnSchemas) => {
+  // 合并列
+  const mergeRowsByFields = (baseField: string, data: any[], rowIndex: number) => {
+    const row = data[rowIndex];
+    const prevRow = data[rowIndex - 1];
+    const nextRow = data[rowIndex + 1];
+    // 隐藏当前单元格，若上一个单元格值相同
+    if (prevRow && prevRow[baseField] === row[baseField]) {
+      return { rowSpan: 0 };
+    }
+    // 计算合并的行数
+    if (nextRow && nextRow[baseField] === row[baseField]) {
+      let rowSpan = 1;
+      for (let i = rowIndex + 1; i < data.length; i++) {
+        if (data[i][baseField] === row[baseField]) {
+          rowSpan++;
+        } else {
+          break;
+        }
+      }
+      return { rowSpan }; // 合并单元格
+    }
+    return { rowSpan: 1 }; // 默认不合并
+  };
+
+  // 获取table的数据源
+  const { data: tableData } = useDataBlockRequestData() || {};
+  console.log('tableData---------', tableData);
+
+  columnSchemas.forEach((columnSchema) => {
+    if (columnSchema['merge'] && tableData) {
+      columnSchema['onCell'] = (record, index) => {
+        const spanD = mergeRowsByFields(columnSchema['dataIndex'], tableData, index);
+        return spanD;
+      };
+    }
+  });
+  return columnSchemas;
+};
+
 const useTableColumns = (
   props: { showDel?: any; isSubTable?: boolean; optimizeTextCellRender: boolean },
   paginationProps,
@@ -217,7 +262,6 @@ const useTableColumns = (
         if (uiSchema) {
           uiSchema.default = defaultValue;
         }
-
         return {
           title: (
             <RefreshComponentProvider refresh={refresh}>
@@ -332,7 +376,6 @@ const useTableColumns = (
 
     return adjustColumnOrder(res);
   }, [columns, exists, field, render, props.showDel, designable]);
-
   return tableColumns;
 };
 
@@ -648,6 +691,11 @@ const displayNone = { display: 'none' };
 
 const BodyCellComponent = React.memo<BodyCellComponentProps>((props) => {
   const { designable } = useDesignable();
+  const { rowSpan } = props;
+  // 处理合并列的隐藏逻辑
+  if (rowSpan === 0) {
+    return <td style={hiddenCellStyle} />;
+  }
 
   if (props.columnHidden) {
     return (
@@ -792,6 +840,7 @@ const InternalNocoBaseTable = React.memo(
       >
         <SortableWrapper>
           <AntdTable
+            bordered
             ref={refCallback}
             rowKey={defaultRowKey}
             // rowKey={(record) => record.id}
@@ -854,7 +903,8 @@ export const Table: any = withDynamicSchemaProps(
       const { expandFlag, allIncludesChildren } = ctx;
       const onRowDragEnd = useMemoizedFn(others.onRowDragEnd || (() => {}));
       const paginationProps = usePaginationProps(pagination1, pagination2, props);
-      const columns = useTableColumns(others, paginationProps);
+      let columns = useTableColumns(others, paginationProps);
+      columns = useMergeRowsSchemas(columns);
       const [expandedKeys, setExpandesKeys] = useState(() => (expandFlag ? allIncludesChildren : []));
       const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>(field?.data?.selectedRowKeys || []);
       const [selectedRow, setSelectedRow] = useState([]);

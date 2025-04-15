@@ -410,6 +410,24 @@ export const TableColumnDesigner = (props) => {
             }}
           />
         )}
+      {/* 合并列 */}
+      <SchemaSettingsSwitchItem
+        key="merge"
+        title={t('合并列')}
+        checked={field.componentProps.merge || false}
+        onChange={(v) => {
+          fieldSchema['x-component-props'] = fieldSchema['x-component-props'] || {};
+          fieldSchema['x-component-props']['merge'] = v;
+          field.componentProps.merge = v;
+          dn.emit('patch', {
+            schema: {
+              'x-uid': fieldSchema['x-uid'],
+              'x-component-props': fieldSchema['x-component-props'],
+            },
+          });
+          dn.refresh();
+        }}
+      />
       {isDateField && <SchemaSettingsDateFormat fieldSchema={fieldSchema} />}
       {isSubTableColumn &&
         !field?.readPretty &&
